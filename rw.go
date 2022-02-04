@@ -83,3 +83,18 @@ func (p *Pipe) Read(b []byte) (int, error) {
 func (p *Pipe) Write(b []byte) (int, error) {
 	return p.W.Write(b)
 }
+
+func (p *Pipe) Close() error {
+  errw := p.W.Close()
+  errr := p.R.Close()
+  return hasErrpr(errw, errr)
+}
+
+func hasError(errs ...error) error {
+  for _, e := range errs {
+    if e != nil {
+      return e
+    }
+  }
+  return nil
+}
