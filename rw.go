@@ -25,20 +25,24 @@ func (w *LimitedWriter) Write(b []byte) (int, error) {
 	if w.N <= 0 {
 		return 0, ErrTooLong
 	}
-  var (
-    remain int
-    err    error
-  )
-  if remain = w.N - len(b); remain < 0 {
-    b = b[:w.N]
-    err = ErrTooLong
-  }
-  n, err := w.W.Write(b)
+	var (
+		remain int64
+		err    error
+	)
+	if remain = w.N - int64(len(b)); remain < 0 {
+		b = b[:w.N]
+		err = ErrTooLong
+	}
+	n, err1 := w.W.Write(b)
+	if err == nil {
+		err = err1
+	}
+  w.N -= int64(n)
 	return n, err
 }
 
-func (w *LimitedWriter) Available() int {
-  return w.N
+func (w *LimitedWriter) Available() int64 {
+	return w.N
 }
 
 var zeroes = make([]byte, 4096)
