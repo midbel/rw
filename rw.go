@@ -18,16 +18,27 @@ func LimitWriter(w io.Writer, n int64) io.Writer {
 	return &LimitedWriter{
 		W: w,
 		N: n,
-		r: n,
 	}
 }
 
 func (w *LimitedWriter) Write(b []byte) (int, error) {
-	if w.r <= 0 {
+	if w.N <= 0 {
 		return 0, ErrTooLong
 	}
+  var (
+    remain int
+    err    error
+  )
+  if remain = w.N - len(b); remain < 0 {
+    b = b[:w.N]
+    err = ErrTooLong
+  }
+  n, err := w.W.Write(b)
+	return n, err
+}
 
-	return 0, nil
+func (w *LimitedWriter) Available() int {
+  return w.N
 }
 
 var zeroes = make([]byte, 4096)
