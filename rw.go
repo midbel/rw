@@ -6,6 +6,46 @@ import (
 	"os"
 )
 
+type UnwrapReader interface {
+	Unwrap() io.Reader
+}
+
+type UnwrapWriter interface {
+	Unwrap() io.Writer
+}
+
+type nopWriteCloser struct{
+	io.Writer
+}
+
+func NopWriteCloser(w io.Writer) io.WriteCloser {
+	return &nopWriteCloser{
+		Writer: w,
+	}
+}
+
+func (n *nopWriteCloser) Unwrap() io.Writer {
+	return n.Writer
+}
+
+func (_ *nopWriteCloser) Close() error { return nil }
+
+type nopReadCloser struct {
+	io.Reader
+}
+
+func NopReadCloser(r io.Reader) io.ReadCloser {
+	return &nopReadCloser{
+		Reader: r,
+	}
+}
+
+func (n *nopReadCloser) Unwrap() io.Reader {
+	return n.Reader
+}
+
+func (_ *nopReadCloser) Close() error { return nil }
+
 var ErrTooLong = errors.New("rw: write too long")
 
 type LimitedWriter struct {
@@ -62,6 +102,16 @@ func (_ zero) Read(b []byte) (int, error) {
 	return n, nil
 }
 
+type emptyReader struct{}
+
+func Empty() io.Reader {
+	return emptyReader{}
+}
+
+func (_ emptyReader) Read(_ []byte) (int, error) {
+	return 0, io.EOF
+}
+
 type Pipe struct {
 	R *os.File
 	W *os.File
@@ -87,7 +137,7 @@ func (p *Pipe) Write(b []byte) (int, error) {
 func (p *Pipe) Close() error {
 	errw := p.W.Close()
 	errr := p.R.Close()
-	return hasErrpr(errw, errr)
+	return hasError(errw, errr)
 }
 
 func hasError(errs ...error) error {
