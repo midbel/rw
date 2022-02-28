@@ -105,12 +105,22 @@ func (_ zero) Read(b []byte) (int, error) {
 type emptyReader struct{}
 
 func Empty() io.Reader {
-	return emptyReader{}
+	return &emptyReader{}
 }
 
-func (_ emptyReader) Read(_ []byte) (int, error) {
+func (_ *emptyReader) Read(_ []byte) (int, error) {
 	return 0, io.EOF
 }
+
+type discard struct{}
+
+func Discard() io.ReadWriteCloser {
+	return &discard{}
+}
+
+func (_ discard) Read(b []byte) (int, error) { return len(b), nil }
+func (_ discard) Write(b []byte) (int, error) { return len(b), nil }
+func (_ discard) Close() error { return nil }
 
 type Pipe struct {
 	R *os.File
