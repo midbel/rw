@@ -26,27 +26,27 @@ func testLimitedWriterError(t *testing.T) {
 }
 
 func testLimitedWriterChunk(t *testing.T) {
-  var (
-    err error
-    wrt = limitWriter(32)
-  )
-  sizes := []struct{
-    Size int
-    Err  bool
-  } {
-    {Size: 16, Err: false},
-    {Size: 8, Err: false},
-    {Size: 16, Err: true},
-  }
-  for _, s := range sizes {
-    _, err = io.WriteString(wrt, strings.Repeat("0", s.Size))
-    switch {
-    case s.Err && err == nil:
-      t.Fatalf("expected error but got none writing %d bytes", s.Size)
-    case !s.Err && err != nil:
-      t.Fatalf("expected no error but got one writing %d bytes: %s", s.Size, err)
-    }
-  }
+	var (
+		err error
+		wrt = limitWriter(32)
+	)
+	sizes := []struct {
+		Size int
+		Err  bool
+	}{
+		{Size: 16, Err: false},
+		{Size: 8, Err: false},
+		{Size: 16, Err: true},
+	}
+	for _, s := range sizes {
+		_, err = io.WriteString(wrt, strings.Repeat("0", s.Size))
+		switch {
+		case s.Err && err == nil:
+			t.Fatalf("expected error but got none writing %d bytes", s.Size)
+		case !s.Err && err != nil:
+			t.Fatalf("expected no error but got one writing %d bytes: %s", s.Size, err)
+		}
+	}
 
 }
 

@@ -37,7 +37,7 @@ func (w *LimitedWriter) Write(b []byte) (int, error) {
 	if err == nil {
 		err = err1
 	}
-  w.N -= int64(n)
+	w.N -= int64(n)
 	return n, err
 }
 
@@ -85,16 +85,16 @@ func (p *Pipe) Write(b []byte) (int, error) {
 }
 
 func (p *Pipe) Close() error {
-  errw := p.W.Close()
-  errr := p.R.Close()
-  return hasErrpr(errw, errr)
+	errw := p.W.Close()
+	errr := p.R.Close()
+	return hasErrpr(errw, errr)
 }
 
 func hasError(errs ...error) error {
-  for _, e := range errs {
-    if e != nil {
-      return e
-    }
-  }
-  return nil
+	for _, e := range errs {
+		if e != nil {
+			return e
+		}
+	}
+	return nil
 }
