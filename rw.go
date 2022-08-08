@@ -14,7 +14,7 @@ type UnwrapWriter interface {
 	Unwrap() io.Writer
 }
 
-type nopWriteCloser struct{
+type nopWriteCloser struct {
 	io.Writer
 }
 
@@ -118,9 +118,9 @@ func Discard() io.ReadWriteCloser {
 	return &discard{}
 }
 
-func (_ discard) Read(b []byte) (int, error) { return len(b), nil }
+func (_ discard) Read(b []byte) (int, error)  { return len(b), nil }
 func (_ discard) Write(b []byte) (int, error) { return len(b), nil }
-func (_ discard) Close() error { return nil }
+func (_ discard) Close() error                { return nil }
 
 type Pipe struct {
 	R *os.File
